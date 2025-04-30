@@ -1,0 +1,345 @@
+***********  EMBEDDED DOCUMENTS   **************
+
+// Addresss schema
+const AddressSchema = new mongoose.Schema(
+  {
+    street: String,
+    city: String,
+    state: String,
+    zipcode: Number,
+  },
+  { timestamps: true }
+);
+const userSchema = new mongoose.Schema(
+  {
+    name: String,
+    email: String,
+    address: AddressSchema, // Embedded doc
+  },
+  { timestamps: true }
+);
+// compile userSchema
+const User = mongoose.model("User", userSchema); // Model
+
+const createUser = async () => {
+  try {
+    const newUser = await User.create({
+      name: "Rudresh Sankpal",
+      email: "Rudreshsankpal21@gmail.com",
+      address: {
+        street: "Bharat Mata nagar",
+        city: "Solapur",
+        state: "Maharashtra",
+        zipcode: 413224,
+      },
+    });
+    console.log(newUser);
+  } catch (error) {
+    console.log(error);
+  }
+};
+createUser();
+
+***********XXXXXXXXXX**************
+*********** ARRAYS OF SUB-EMBEDDED DOCUMENTS   **************
+
+// Students schema
+const studentsSchema = new mongoose.Schema(
+  {
+    name: String,
+    age: Number,
+    grade: String,
+    rollNo: Number,
+    attendance: {
+      type: String,
+      required: true,
+      enum: ["present", "absent"],
+    },
+  },
+  { timestamps: true }
+);
+const classroomSchema = new mongoose.Schema(
+  {
+    classname: String,
+    students: [studentsSchema], // Embedded array doc
+  },
+  { timestamps: true }
+);
+// compile classroomSchema
+const classroom = mongoose.model("classroom", classroomSchema); // Model
+
+const createStudent = async () => {
+  try {
+    const newStudent = await classroom.create({
+      classname: "C++",
+      students: [
+        {
+          name: "Rudresh",
+          age: 18,
+          grade: "A",
+          rollNo: 69,
+          attendance: "present",
+        },
+        {
+          name: "Alice",
+          age: 17,
+          grade: "B",
+          rollNo: 72,
+          attendance: "absent",
+        },
+        {
+          name: "Emmanual",
+          age: 18,
+          grade: "A",
+          rollNo: 90,
+          attendance: "absent",
+        },
+        { name: "Raj", age: 19, grade: "C", rollNo: 34, attendance: "present" },
+      ],
+    });
+    console.log(newStudent);
+  } catch (error) {
+    console.log(error);
+  }
+};
+createStudent();
+***********XXXXXXXXXX**************
+
+
+***********    Data Referencing    **************
+const express = require("express");
+const mongoose = require("mongoose");
+const app = express();
+const PORT = 3000;
+const URL =
+  "mongodb+srv://rudreshsankpal21:LlUSfYty7rjrlxdj@rudresh.dfldr.mongodb.net/students-database";
+// connect to MongoDB
+
+app.get("/", (req, res) => {
+  res.send("Hello world");
+});
+const connectDB = async () => {
+  try {
+    await mongoose.connect(URL);
+    console.log(`DataBase connected successfully`);
+  } catch (error) {
+    console.log(`Something went wrong ${error}`);
+  }
+};
+connectDB();
+
+// Author Schema
+const authorSchema = new mongoose.Schema(
+  {
+    name: String,
+  },
+  { timestamps: true }
+);
+
+// compile author Schema
+const author = mongoose.model("Author", authorSchema); // Model
+
+// Books schema
+const booksSchema = new mongoose.Schema(
+  {
+    title: String,
+    author: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "Author",
+    },
+  },
+  { timestamps: true }
+);
+// compile book Schema
+const Book = mongoose.model("Book", booksSchema); // Model
+//Create Author
+const createAuthor = async () => {
+  try {
+    // create The author
+    const newAuthor = await author.create({
+      name: "Hardik Sankpal",
+    });
+    console.log(newAuthor);
+    return newAuthor; // return the author
+  } catch (error) {
+    console.log(error);
+  }
+};
+//Create Book
+const createBook = async () => {
+  try {
+    // create The author
+    const newBook = await Book.create({
+      title: "DO IT TODAY",
+      author: authorId,
+    });
+    console.log(newBook);
+  } catch (error) {
+    console.log(error);
+  }
+};
+createAuthor();
+createBook();
+app.listen(PORT, () => {
+  console.log(`http://localhost:${PORT}`);
+});
+
+***********XXXXXXXXXX**************
+
+
+***********    ONE-TO-MANY   **************
+
+// comment Schema
+const commentSchema = new mongoose.Schema(
+  {
+    text: String,
+  },
+  { timestamps: true }
+);
+
+// compile comment Schema
+const Comment = mongoose.model("Comment", commentSchema); // Model
+
+// blogpost schema
+const blogpostSchema = new mongoose.Schema(
+  {
+    title: String,
+    comments: [{ type: mongoose.Schema.Types.ObjectId, ref: "Comment" }],
+  },
+  { timestamps: true }
+);
+// compile blogpost Schema
+const Post = mongoose.model("Post", blogpostSchema); // Model
+
+//Create post
+// const createPost = async () => {
+//   try {
+//     const newDoc = await Post.create({
+//       title: "Awesome fullstack course ",
+//     });
+//     console.log(newDoc);
+//   } catch (error) {
+//     console.log(error);
+//   }
+// };
+
+//Create comment
+const createComment = async () => {
+  try {
+    // Step 1:- Find the post you want to comment
+    const postFound = await Post.findById("68033b73f87c112cfdfa1268");
+    console.log(postFound);
+
+    // Step 2:- Create the comment
+    const newComment = await Comment.create({ text: "Awesome Post23" });
+    console.log(newComment);
+
+    // Step 3:- Push the comment into the post
+    postFound.comments.push(newComment._id);
+    // Step 4:- Resave the post
+    await postFound.save();
+  } catch (error) {
+    console.log(error);
+  }
+};
+createComment();
+***********XXXXXXXXXX**************
+
+
+***********    MANY-TO-MANY   **************
+// Courses Schema
+const coursesSchema = new mongoose.Schema(
+  {
+    name: String,
+    enrolledStudents: [
+      { type: mongoose.Schema.Types.ObjectId, ref: "Student" },
+    ],
+  },
+  { timestamps: true }
+);
+// compile course Schema
+const Course = mongoose.model("Course", coursesSchema); // Model
+
+// Student schema
+const studentSchema = new mongoose.Schema(
+  {
+    name: String,
+    enrolledCourses: [{ type: mongoose.Schema.Types.ObjectId, ref: "Course" }],
+  },
+  { timestamps: true }
+);
+// compile student Schema
+const Student = mongoose.model("Student", studentSchema); // Model
+
+// Create student
+// const createStudents = async () => {
+//   try {
+//     const newDoc = await Student.create([
+//       { name: "Rudresh" },
+//       { name: "Hardik" },
+//       { name: "Harshal" },
+//       { name: "Raj" },
+//       { name: "Samarth" },
+//     ]);
+
+//     console.log(newDoc);
+//   } catch (error) {
+//     console.log(error);
+//   }
+// };
+// createStudents();
+
+//Create Course
+// const createCourses = async () => {
+//   try {
+//     const newDoc = await Course.create([
+//       { name: "Math 101" },
+//       { name: "History 101" },
+//       { name: "Science 101" },
+//     ]);
+//     console.log(newDoc);
+//   } catch (error) {
+//     console.log(error);
+//   }
+// };
+
+//**** STUDENT APPLYING TO COURSES
+const applyToCourse = async () => {
+  try {
+    // Step 1:- Find the student
+    const foundStudent1 = await Student.findById("68034d1a536339756e108252");
+
+    const foundStudent2 = await Student.findById("68034d1a536339756e10824e");
+
+    // Step 2:- Find the Course
+    const foundCourse1 = await Course.findById("68034bb39903b18224347c5f");
+
+    const foundCourse2 = await Course.findById("68034bb39903b18224347c60");
+
+    // Step 3:- Apply to the course (1.Update the student enrolledCourses 2. Update the enrolledStudents on course)
+
+    // Step 4:- Push the course found into the student's enrolledCourse field
+    // foundStudent1.enrolledCourses.push(foundCourse1._id);
+
+    foundStudent2.enrolledCourses.push(foundCourse2._id);
+
+    // Step 4:- Push the student found into the course's enrolledStudent field
+    // foundCourse1.enrolledStudents.push(foundStudent1._id);
+
+    foundCourse2.enrolledStudents.push(foundStudent2._id);
+
+    // Step 5:- Resave the documents
+    await foundCourse2.save();
+
+    await foundStudent2.save();
+
+    console.log(foundStudent2);
+
+    console.log(foundCourse2);
+    
+  } catch (error) {
+    console.log(error);
+  }
+};
+applyToCourse();
+***********XXXXXXXXXX**************

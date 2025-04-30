@@ -1,0 +1,312 @@
+//--------- Create operations
+
+// Creating data using save() method
+const newUser = new User({
+  username: "Rudresh Sankpal",
+  age: 19,
+  brithday: new Date("2006-06-19"),
+  isActive: true,
+  hoobies: ["Football", "Reading", "Coding"],
+  address: {
+    street: "Bharat Mata Nagar",
+    city: "Solapur",
+    postCode: 413224,
+  },
+  customData: {
+    country: "India",
+    speciality: "Frontend",
+    learning: "Backend",
+  },
+});
+
+// newUser
+//   .save()
+//   .then((data) => {
+//     console.log(data);
+//   })
+//   .catch((err) => {
+//     console.log(err);
+//   });
+
+// Creating data using create() method
+// User.create({
+//   username: "Rudresh Sankpal 123",
+//   age: 19,
+//   brithday: new Date("2006-06-19"),
+//   isActive: true,
+//   hoobies: ["Football", "Reading", "Coding"],
+//   address: {
+//     street: "Bharat Mata Nagar",
+//     city: "Solapur",
+//     postCode: 413224,
+//   },
+//   customData: {
+//     country: "India",
+//     speciality: "Frontend",
+//     learning: "Backend",
+//   },
+// })
+//   .then((data) => {
+//     console.log(data);
+//   })
+//   .catch((err) => {
+//     console.log(err);
+//   });
+
+// Creating data using insertMany() method
+// User.insertMany([
+//   {
+//     username: "Rudresh Sankpal 1",
+//     age: 19,
+//     brithday: new Date("2006-06-19"),
+//     isActive: true,
+//     hoobies: ["Football", "Reading", "Coding"],
+//     address: {
+//       street: "Bharat Mata Nagar",
+//       city: "Solapur",
+//       postCode: 413224,
+//     },
+//     customData: {
+//       country: "India",
+//       speciality: "Frontend",
+//       learning: "Backend",
+//     },
+//   },
+//   {
+//     username: "Rudresh Sankpal 2",
+//     age: 19,
+//     brithday: new Date("2006-06-19"),
+//     isActive: true,
+//     hoobies: ["Football", "Reading", "Coding"],
+//     address: {
+//       street: "Bharat Mata Nagar",
+//       city: "Solapur",
+//       postCode: 413224,
+//     },
+//     customData: {
+//       country: "India",
+//       speciality: "Frontend",
+//       learning: "Backend",
+//     },
+//   },
+//   {
+//     username: "Rudresh Sankpal 3",
+//     age: 19,
+//     brithday: new Date("2006-06-19"),
+//     isActive: true,
+//     hoobies: ["Football", "Reading", "Coding"],
+//     address: {
+//       street: "Bharat Mata Nagar",
+//       city: "Solapur",
+//       postCode: 413224,
+//     },
+//     customData: {
+//       country: "India",
+//       speciality: "Frontend",
+//       learning: "Backend",
+//     },
+//   },
+// ])
+//   .then((data) => {
+//     console.log(data);
+//   })
+//   .catch((err) => {
+//     console.log(err);
+//   });
+
+
+
+// ---- Read operations
+User.find()
+  .then((user) => {
+    console.log(user);
+  })
+  .catch((e) => {
+    console.log(e);
+  });
+
+  User.findOne({username:"Rudresh sankpal"})
+  .then((user) => {
+    console.log(user);
+  })
+  .catch((e) => {
+    console.log(e);
+  });
+  User.findById("67e18056e0620bb03829cabe")
+  .then((user) => {
+    console.log(user);
+  })
+  .catch((e) => {
+    console.log(e);
+  });
+
+
+
+  // Using .where() method
+// const findUsers = async () => {
+//   try {
+//     const users = await User.find().where("age").gte(19);
+//     console.log(users);
+//   } catch (error) {}
+// };
+
+
+  // Using .sort() method
+const findUsers = async () => {
+  try {
+    const users = await User.find().where("age").gte(19).sort({ username: 1 }); // +1 for ascending order & -1 for descendiing order
+    console.log(users);
+  } catch (error) {}
+};
+findUsers();
+
+
+
+
+
+// Update Operations
+// using updateOne()
+
+const updateDocuments = async () => {
+  try {
+    const updateUser = await User.updateOne(
+      { username: "Rudresh Sankpal" },
+      { age: 20, isActive: false },
+      {
+        new: true,
+      }
+    );
+    console.log(updateUser);
+  } catch (error) {
+    console.log(error);
+  }
+};
+updateDocuments();
+
+
+// using findByIdAndUpdate()
+
+// const updateDocuments = async () => {
+//   try {
+//     const updateUser = await User.findByIdAndUpdate(
+//       "67e181ce6b88f7cce066b6fc",
+//       { age: 50, isActive: false, brithday: new Date("2006-05-19") },
+//       {
+//         new: true,
+//       }
+//     );
+//     console.log(updateUser);
+//   } catch (error) {
+//     console.log(error);
+//   }
+// };
+
+
+// using findOneAndUpdate()
+const updateDocuments = async () => {
+  try {
+    const updateUser = await User.findOneAndUpdate(
+      { username: "Rudresh Sankpal 3" },
+      {
+        age: 30,
+        isActive: false,
+        brithday: new Date("2006-05-19"),
+        username: "Milind Sankpal",
+      },
+      {
+        new: true,
+      }
+    );
+    console.log(updateUser);
+  } catch (error) {
+    console.log(error);
+  }
+};
+updateDocuments();
+
+
+
+
+//Update Operators
+// Using $set and $unset
+// const updateDoc = async () => {
+//   try {
+//     const updateuser = await User.findOneAndUpdate(
+//       {
+//         username: "Rudresh Sankpal",
+//       },
+//       {
+//         $set: { age: 1 },
+//       },
+//       {
+//         new: true,
+//       }
+//     );
+//     console.log(updateuser);
+//   } catch (error) {}
+// };
+// updateDoc();
+
+
+
+// Using $addToSet and $push
+const updateDoc = async () => {
+  try {
+    const updateuser = await User.findOneAndUpdate(
+      {
+        username: "Rudresh Sankpal",
+      },
+      {
+        $addToSet: { hoobies: ["Playing games", "Listening music"] },
+        // $push: { hoobies: "Swimming" },
+      },
+      {
+        new: true,
+      }
+    );
+    console.log(updateuser);
+  } catch (error) {}
+};
+updateDoc();
+
+
+
+// Using $inc and $mul
+const updateDoc = async () => {
+  try {
+    const updateuser = await User.findOneAndUpdate(
+      {
+        username: "Rudresh Sankpal",
+      },
+      {
+        $inc: { age: -1 },
+        $mul: { age: 3 },
+      },
+      {
+        new: true,
+      }
+    );
+    console.log(updateuser);
+  } catch (error) {}
+};
+updateDoc();
+
+
+// Using $pop and $pull
+const updateDoc = async () => {
+  try {
+    const updateuser = await User.findOneAndUpdate(
+      {
+        username: "Rudresh Sankpal",
+      },
+      {
+        $pull: { hoobies: "Listening music" },
+      },
+      {
+        new: true,
+      }
+    );
+    console.log(updateuser);
+  } catch (error) {}
+};
+updateDoc();
