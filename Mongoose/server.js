@@ -3,7 +3,7 @@ const mongoose = require("mongoose");
 const app = express();
 const PORT = 8082;
 const URL =
-  "mongodb+srv://rudreshsankpal21:LlUSfYty7rjrlxdj@rudresh.dfldr.mongodb.net/students-database";
+  "mongodbURL";
 // connect to MongoDB
 
 app.get("/", (req, res) => {
