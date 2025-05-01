@@ -9,7 +9,7 @@ const port = 3000;
 
 // connect to mongoDB
 const client = new MongoClient(
-  "mongodb+srv://rudreshsankpal21:LlUSfYty7rjrlxdj@rudresh.dfldr.mongodb.net/students-database", // url created on the mongoDB website
+  "mongodbURL", // url created on the mongoDB website
   {
     serverApi: {
       version: ServerApiVersion.v1,
