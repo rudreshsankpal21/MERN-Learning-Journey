@@ -9,7 +9,7 @@ const port = 3000;
 // connect to DB
 mongoose
   .connect(
-    "mongodb+srv://rudreshsankpal21:LlUSfYty7rjrlxdj@rudresh.dfldr.mongodb.net/image-upload"
+    "mongodbURL"
   )
   .then(() => {
     console.log("DB connected");
