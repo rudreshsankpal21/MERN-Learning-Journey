@@ -5,7 +5,7 @@ const mongoose = require("mongoose");
 const postRouter = require("./routes/blogRoutes");
 mongoose
   .connect(
-    "mongodb+srv://rudreshsankpal21:LlUSfYty7rjrlxdj@rudresh.dfldr.mongodb.net/students-database"
+    "mongodbURL"
   )
   .then(() => {
     console.log("DB has been connected");
