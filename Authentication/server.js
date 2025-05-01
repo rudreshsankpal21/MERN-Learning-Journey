@@ -11,7 +11,7 @@ const PORT = 3000;
 // connect to mongoose
 mongoose
   .connect(
-    "mongodb+srv://rudreshsankpal21:LlUSfYty7rjrlxdj@rudresh.dfldr.mongodb.net/Rudresh-database"
+    "MongoURL"
   )
   .then(console.log("DB has been connected"))
   .catch((e) => {
