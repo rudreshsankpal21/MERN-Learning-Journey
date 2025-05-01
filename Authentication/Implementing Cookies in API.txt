@@ -1,0 +1,78 @@
+const express = require("express");
+const app = express();
+const cookieParser = require("cookie-parser");
+const PORT = 3000;
+
+app.use(express.json());
+app.use(cookieParser());
+
+// Simulated database of users
+const users = [
+  { username: "Rudresh", password: "123", role: "admin" },
+  { username: "raj", password: "456", role: "user" },
+];
+
+app.get("/", (req, res) => {
+  res.json({ message: "Welcome to home page" });
+});
+
+app.get("/login", (req, res) => {
+  res.json({ message: "Welcome to login page" });
+});
+app.post("/login", (req, res) => {
+  // 1. Find the user login details
+  const userFound = users.find((user) => {
+    const { username, password } = req.body;
+    return user.username === username && user.password === password;
+  });
+
+  // 2. Create some cookies
+  //**Prepare the login user data **//
+  //Setting the cookie with the userData
+  res.cookie("userData", JSON.stringify(userFound), {
+    maxAge: 3 * 24 * 60 * 1000, // 3days expiration
+    httpOnly: true,
+    secure: false,
+    sameSite: "strict",
+  });
+
+  // 3. Render the user Dashboard
+  if (userFound) {
+    res.json({ message: "Login success" });
+  } else {
+    res.json({ message: "Login failed Invalid credentials" });
+  }
+});
+
+app.get("/dashboard", (req, res) => {
+  // Grab the user from the cookie
+  const userData = req.cookies.userData
+    ? JSON.parse(req.cookies.userData)
+    : null;
+  const username = userData ? userData.username : null;
+  // Render the template
+  if (username) {
+    res.json({
+      message: `Welcome ${username}
+      ,role:${userData.role}`,
+    });
+  }
+  // Redirect to login
+  else {
+    res.json({
+      message: "Unauthorized please login first",
+    });
+  }
+});
+
+app.get("/logout", (req, res) => {
+  // logout
+  res.clearCookie("userData");
+  res.json({
+    message: "Logged out successfully",
+  });
+});
+
+app.listen(PORT, () => {
+  console.log(`Server running at http://localhost:${PORT}`);
+});

@@ -1,0 +1,120 @@
+<IMP>
+
+const express = require("express");
+const app = express();
+const cookieParser = require("cookie-parser");
+const mongoose = require("mongoose");
+const bcrypt = require("bcryptjs");
+const PORT = 3000;
+// connect to mongoose
+mongoose
+  .connect(
+    "mongodb+srv://rudreshsankpal21:LlUSfYty7rjrlxdj@rudresh.dfldr.mongodb.net/Rudresh-database"
+  )
+  .then(console.log("DB has been connected"))
+  .catch((e) => {
+    console.log(e);
+  });
+
+// create the user schema
+const userSchema = new mongoose.Schema({
+  username: String,
+  password: String,
+  role: {
+    type: String,
+    default: "user",
+  },
+});
+//compile the schema to form model
+const User = mongoose.model("User", userSchema);
+app.set("view engine", "ejs");
+app.use(express.urlencoded({ extended: true }));
+app.use(cookieParser());
+
+app.get("/", (req, res) => {
+  res.render("home");
+});
+
+app.get("/login", (req, res) => {
+  res.render("login");
+});
+// Register route
+app.get("/register", (req, res) => {
+  res.render("register");
+});
+//Register logic
+app.post("/register", async (req, res) => {
+  //Destructure the req.body
+  const { username, password } = req.body;
+  const hashedPass = await bcrypt.hash(password, 10);
+  try {
+    const newUser = await User.create(
+      {
+        username,
+        password: hashedPass,
+      },
+      {
+        timestamps: true,
+      }
+    );
+    // Redirect user to login
+    res.redirect("login");
+  } catch (error) {}
+});
+
+app.post("/login", async (req, res) => {
+  // 1. Find the user in the DB
+  const { username, password } = req.body;
+  const userFound = await User.findOne({
+    username,
+  });
+  if (userFound && (await bcrypt.compare(password, userFound.password))) {
+    // 2. Create some cookies
+    //**Prepare the login user data **//
+    //Setting the cookie with the userData
+    res.cookie("userData", JSON.stringify(userFound), {
+      maxAge: 3 * 24 * 60 * 1000, // 3days expiration
+      httpOnly: true,
+      secure: false,
+      sameSite: "strict",
+    });
+    res.redirect("/dashboard");
+  } else {
+    res.send("Invalid login credentials");
+  }
+});
+
+app.get("/dashboard", (req, res) => {
+  // Grab the user from the cookie
+
+  // const userData = req.cookies.userData
+  //   ? JSON.parse(req.cookies.userData)
+  //   : null;
+  // const username = userData ? userData.username : null;
+
+  const userData = req.cookies.userData
+    ? JSON.parse(req.cookies.userData)
+    : null;
+
+  const username = userData ? userData.username : null;
+
+  // Render the template
+  if (username) {
+    res.render("dashboard", { username });
+  }
+  // Redirect to login
+  else {
+    res.redirect("login");
+  }
+  res.render("dashboard");
+});
+
+app.get("/logout", (req, res) => {
+  // logout
+  res.clearCookie("userData");
+  res.redirect("/login");
+});
+
+app.listen(PORT, () => {
+  console.log(`Server running at http://localhost:${PORT}`);
+});
