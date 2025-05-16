@@ -27,14 +27,14 @@ This is not a "perfect" guide—it's raw, real, and evolving as I grow.
 - Node.js and Express.js basics  
 - MongoDB basics and CRUD operations
 
-### Phase 2: Backend Projects – *In Progress*  
+### Phase 2: Backend Projects – ✅ Completed  
 - Building REST APIs  
 - Middleware (custom and built-in)  
 - Cookie-based authentication  
 - MongoDB relationships  
 - JWTs and authentication flows
 
-### Phase 3: React Frontend – *Coming Soon*  
+### Phase 3: React Frontend – *In Progress* 
 - React fundamentals  
 - Components and Props  
 - Hooks  
